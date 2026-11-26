@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness Wheel — Self-Assessment</title>
+<style>
+  :root{
+    --ink:#233126;
+    --paper:#F6F2E9;
+    --paper-2:#EFE8D8;
+    --line:#D9CFB8;
+    --teal:#2C4A47;
+    --teal-2:#3D6560;
+    --sage:#8AA290;
+    --gold:#C08A3E;
+    --coral:#B4574F;
+
+    --c-emotional:#B4574F;
+    --c-spiritual:#8A6BAB;
+    --c-environmental:#7C9A5E;
+    --c-financial:#C08A3E;
+    --c-intellectual:#4E7A9C;
+    --c-physical:#D19A3E;
+    --c-occupational:#6E8F4E;
+    --c-social:#5A7D6B;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5;
+  }
+  .sans{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  svg.icon{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+
+  /* ---------- header ---------- */
+  header.hero{
+    padding:56px 24px 20px;
+    text-align:center;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(61,101,96,0.10), transparent 60%),
+      var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--teal-2);
+    margin-bottom:14px;
+  }
+  h1.title{
+    font-size:clamp(34px,5vw,54px);
+    margin:0 0 10px;
+    font-weight:600;
+    color:var(--teal);
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    max-width:560px;
+    margin:0 auto 8px;
+    color:#4b5750;
+    font-size:17px;
+  }
+
+  /* ---------- hero wheel graphic ---------- */
+  .hero-wheel-wrap{
+    position:relative;
+    width:min(340px,80vw);
+    aspect-ratio:1/1;
+    margin:30px auto 6px;
+  }
+  .hero-wheel-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    box-shadow:0 10px 30px rgba(44,74,71,0.14);
+  }
+  .hero-wheel-center{
+    position:absolute;
+    left:50%;top:50%;
+    width:44%;height:44%;
+    transform:translate(-50%,-50%);
+    background:var(--paper);
+    border-radius:50%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow:inset 0 0 0 1px var(--line);
+    text-align:center;
+    padding:8px;
+  }
+  .hero-wheel-center .n{
+    font-size:26px;
+    font-weight:700;
+    color:var(--teal);
+    line-height:1;
+  }
+  .hero-wheel-center .t{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:9.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#6b7568;
+    margin-top:4px;
+  }
+  .hero-node{
+    position:absolute;
+    width:56px;
+    transform:translate(-50%,-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    pointer-events:none;
+  }
+  .hero-node .badge{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
+  }
+  .hero-node .badge svg.icon{width:16px;height:16px;}
+  .hero-node .lbl{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:9.5px;
+    font-weight:600;
+    color:var(--ink);
+    text-align:center;
+    line-height:1.15;
+    background:rgba(246,242,233,0.85);
+    padding:1px 4px;
+    border-radius:3px;
+  }
+
+  /* ---------- overall progress ---------- */
+  .progress-wrap{
+    max-width:520px;
+    margin:26px auto 0;
+    padding:0 24px;
+  }
+  .progress-track{
+    height:8px;
+    border-radius:5px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--sage),var(--teal-2));
+    transition:width .4s ease;
+  }
+  .progress-caption{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12px;
+    color:#6b7568;
+    text-align:center;
+    margin-top:8px;
+  }
+  .progress-caption b{color:var(--teal);}
+
+  /* ---------- guide ---------- */
+  .guide-wrap{
+    max-width:720px;
+    margin:36px auto 0;
+    padding:0 24px;
+  }
+  .guide{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:22px 26px;
+    font-size:15px;
+  }
+  .guide h3{
+    margin:0 0 10px;
+    font-size:13px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal-2);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .guide ol{margin:0;padding-left:20px;}
+  .guide li{margin:4px 0;}
+  .guide b{color:var(--teal);}
+
+  /* ---------- category sections ---------- */
+  main{max-width:760px;margin:48px auto;padding:0 24px;}
+  .category{
+    margin-bottom:14px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    overflow:hidden;
+  }
+  .cat-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:16px 22px;
+    cursor:pointer;
+    user-select:none;
+    background:#fff;
+  }
+  .cat-head:hover{background:#fbfaf6;}
+  .cat-head-left{display:flex;align-items:center;gap:12px;}
+  .cat-icon-badge{
+    width:36px;height:36px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--cat-bg);
+    color:var(--cat-fg);
+    flex:none;
+  }
+  .cat-icon-badge svg.icon{width:18px;height:18px;}
+  .cat-name{font-size:18px;font-weight:600;color:var(--ink);}
+  .cat-right{display:flex;align-items:center;gap:12px;}
+  .cat-score{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12.5px;
+    color:#6b7568;
+    white-space:nowrap;
+  }
+  .cat-score b{color:var(--teal);font-size:14px;}
+  .cat-ring{flex:none;}
+  .chevron{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    transition:transform .25s ease;
+    color:#9aa397;
+    font-size:14px;
+  }
+  .category.open .chevron{transform:rotate(180deg);}
+
+  .cat-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+    border-top:1px solid transparent;
+  }
+  .category.open .cat-body{border-top:1px solid var(--line);}
+
+  .question{
+    padding:18px 22px;
+    border-bottom:1px solid #f0ece0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .question:last-child{border-bottom:none;}
+  .q-text{font-size:15px;color:var(--ink);max-width:520px;}
+
+  .scale{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .scale-label{font-size:10.5px;color:#8a9188;text-transform:uppercase;letter-spacing:.06em;width:64px;}
+  .scale-label.right{text-align:right;}
+  .opt{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    cursor:pointer;
+    color:#8a9188;
+    background:#fff;
+    transition:transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+    flex:none;
+  }
+  .opt:hover{border-color:var(--sage);color:var(--teal);transform:translateY(-1px);}
+  .opt.selected{
+    background:var(--cat-color,var(--teal));
+    border-color:var(--cat-color,var(--teal));
+    color:#fff;
+    font-weight:700;
+    transform:scale(1.08);
+    box-shadow:0 3px 8px rgba(0,0,0,0.18);
+  }
+  .opt input{display:none;}
+  /* graded sizing: value 1 smallest, 5 largest */
+  .opt[data-val="1"]{width:24px;height:24px;font-size:10.5px;}
+  .opt[data-val="2"]{width:28px;height:28px;font-size:11.5px;}
+  .opt[data-val="3"]{width:32px;height:32px;font-size:12.5px;}
+  .opt[data-val="4"]{width:36px;height:36px;font-size:13.5px;}
+  .opt[data-val="5"]{width:40px;height:40px;font-size:14.5px;}
+
+  /* ---------- wheel section (revealed only at end) ---------- */
+  .wheel-section{
+    max-width:960px;
+    margin:48px auto 0;
+    padding:0 24px;
+  }
+  .locked-card{
+    background:var(--paper-2);
+    border:1px dashed var(--line);
+    border-radius:6px;
+    padding:44px 28px;
+    text-align:center;
+  }
+  .locked-card .lock-icon{
+    width:38px;height:38px;
+    margin:0 auto 14px;
+    color:var(--sage);
+  }
+  .locked-card h3{
+    margin:0 0 8px;
+    font-size:20px;
+    color:var(--teal);
+  }
+  .locked-card p{
+    margin:0 auto 18px;
+    max-width:420px;
+    font-size:14.5px;
+    color:#5c665c;
+  }
+  .locked-card .progress-wrap{margin:0 auto;max-width:320px;padding:0;}
+
+  .revealed-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:28px;
+    animation:reveal .6s ease;
+  }
+  @keyframes reveal{
+    from{opacity:0;transform:translateY(10px) scale(.98);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .wheel-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px;
+    text-align:center;
+  }
+  .wheel-card h2{
+    margin:0 0 4px;
+    font-size:20px;
+    color:var(--teal);
+    font-weight:600;
+  }
+  .wheel-card p.sub{
+    margin:0 0 18px;
+    font-size:13px;
+    color:#6b7568;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  #wheelSvg{width:100%;max-width:480px;height:auto;}
+  .wheel-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 14px;
+    justify-content:center;
+    margin-top:16px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12px;
+  }
+  .wheel-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  .score-table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:13.5px;
+    margin-top:6px;
+  }
+  .score-table th, .score-table td{
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+    text-align:left;
+  }
+  .score-table th{
+    color:#6b7568;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    font-size:10.5px;
+  }
+  .score-table td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .cat-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px;}
+
+  /* ---------- interpretation ---------- */
+  .interpret{max-width:760px;margin:56px auto;padding:0 24px;}
+  .interpret h2, .action h2{font-size:24px;color:var(--teal);margin-bottom:6px;}
+  .interpret .sub, .action .sub{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:13px;color:#6b7568;margin-bottom:20px;
+  }
+  .tier{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line);}
+  .tier:last-child{border-bottom:1px solid var(--line);}
+  .tier .range{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:700;font-size:13px;color:var(--teal);width:64px;flex:none;padding-top:2px;
+  }
+  .tier p{margin:0;font-size:14.5px;color:#3d463f;}
+  blockquote.reflect{
+    margin:24px 0 0;padding:18px 22px;border-left:3px solid var(--gold);
+    background:var(--paper-2);font-size:15px;font-style:italic;color:#4b5548;
+  }
+
+  /* ---------- action ---------- */
+  .action{max-width:760px;margin:56px auto 80px;padding:0 24px;}
+  .action-q{margin-bottom:22px;}
+  .action-q label{display:block;font-size:15px;color:var(--ink);margin-bottom:8px;}
+  .action-q .n{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--gold);font-weight:700;margin-right:6px;
+  }
+  .action-q textarea{
+    width:100%;min-height:64px;padding:12px 14px;border:1px solid var(--line);
+    border-radius:4px;background:#fff;font-family:inherit;font-size:14.5px;
+    color:var(--ink);resize:vertical;
+  }
+  .action-q textarea:focus{outline:none;border-color:var(--sage);}
+
+  footer{
+    text-align:center;padding:28px 24px 48px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12px;color:#9aa397;
+  }
+  .print-btn{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--teal);color:#fff;border:none;padding:11px 20px;
+    border-radius:4px;font-size:13px;cursor:pointer;margin-top:8px;
+  }
+  .print-btn:hover{background:var(--teal-2);}
+
+  @media (max-width:600px){
+    .scale-label{display:none;}
+    .cat-name{font-size:16px;}
+    .hero-wheel-wrap{width:min(280px,84vw);}
+  }
+  @media print{.print-btn{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- hidden icon library -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="ic-emotional" viewBox="0 0 24 24"><path d="M12 21s-7.2-4.4-9.6-8.8C.8 8.6 2 4.8 5.6 4.8c2 0 3.6 1.2 4.4 3 .8-1.8 2.4-3 4.4-3 3.6 0 4.8 3.8 3.2 7.4C19.2 16.6 12 21 12 21z"/></symbol>
+    <symbol id="ic-spiritual" viewBox="0 0 24 24"><path d="M12 3c-3.2 3.6-3.2 8.2 0 11.4 3.2-3.2 3.2-7.8 0-11.4z"/><path d="M12 14v7"/><path d="M8 19c0-2.2 1.8-3 4-3s4 .8 4 3"/></symbol>
+    <symbol id="ic-environmental" viewBox="0 0 24 24"><path d="M4 20c9-1 15-7 16-16-9 1-15 7-16 16z"/><path d="M6 18c4.5-4.5 9-9 12-12"/></symbol>
+    <symbol id="ic-financial" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9"/><path d="M9.5 9.5c0-1.2 1.1-2 2.5-2s2.5.7 2.5 1.8-1.1 1.6-2.5 2-2.5.9-2.5 2 1.1 1.9 2.5 1.9 2.5-.8 2.5-2"/></symbol>
+    <symbol id="ic-intellectual" viewBox="0 0 24 24"><path d="M4 5.5c3-1.2 6-1.2 8 .3v13c-2-1.5-5-1.5-8-.3v-13z"/><path d="M20 5.5c-3-1.2-6-1.2-8 .3v13c2-1.5 5-1.5 8-.3v-13z"/></symbol>
+    <symbol id="ic-physical" viewBox="0 0 24 24"><circle cx="13.5" cy="4.5" r="1.8"/><path d="M13 8l-.5 5"/><path d="M12.5 13l-4 3"/><path d="M12.5 13l4 2.5"/><path d="M8.5 16l-2 4"/><path d="M16.5 15.5l2.5 3.5"/></symbol>
+    <symbol id="ic-occupational" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="M8.5 8V6.3A1.8 1.8 0 0 1 10.3 4.5h3.4A1.8 1.8 0 0 1 15.5 6.3V8"/><path d="M3 13.5h18"/></symbol>
+    <symbol id="ic-social" viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9.5" r="2.6"/><path d="M3 20c.3-3.4 2.4-5.6 5.5-5.6S13.6 16.6 14 20"/><path d="M14.3 20c.3-2.8 1.9-4.6 4.4-4.6s3.9 1.6 4.3 4.1"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="eyebrow">A Self-Guided Reflection</div>
+  <h1 class="title">Wellness Wheel</h1>
+  <p class="lede">Eight areas of life, forty questions, one honest look. Score each one below — your completed Wheel will reveal itself once every question has an answer.</p>
+
+  <div class="hero-wheel-wrap" id="heroWheel">
+    <div class="hero-wheel-ring" id="heroRing"></div>
+    <div class="hero-wheel-center">
+      <div class="n">8</div>
+      <div class="t">Areas of Life</div>
+    </div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFillTop"></div></div>
+  <div class="progress-caption sans"><b id="answeredCountTop">0</b> of 40 questions answered</div>
+</div>
+
+<div class="guide-wrap">
+  <div class="guide">
+    <h3>How to score each question</h3>
+    <ol>
+      <li><b>5</b> — I am extremely satisfied</li>
+      <li><b>4</b> — I am very satisfied, but can do a bit more</li>
+      <li><b>3</b> — I feel satisfied, but can make some improvements</li>
+      <li><b>2</b> — I am very unsatisfied and need to prioritize</li>
+      <li><b>1</b> — I am extremely unsatisfied and need to take actionable steps to improve</li>
+    </ol>
+  </div>
+</div>
+
+<main id="categories"></main>
+
+<div class="wheel-section" id="wheelSection">
+  <div class="locked-card" id="lockedCard">
+    <svg class="icon lock-icon" viewBox="0 0 24 24"><use href="#ic-lock"/></svg>
+    <h3>Your Wheel is still forming</h3>
+    <p>Answer every question above to reveal your completed Wellness Wheel and score summary.</p>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFillLocked"></div></div>
+      <div class="progress-caption sans"><b id="answeredCountLocked">0</b> of 40 questions answered</div>
+    </div>
+  </div>
+
+  <div class="revealed-grid" id="revealedGrid" style="display:none;">
+    <div class="wheel-card">
+      <h2>Your Wheel</h2>
+      <p class="sub">Drawn from your answers above</p>
+      <svg id="wheelSvg" viewBox="0 0 480 480"></svg>
+      <div class="wheel-legend" id="wheelLegend"></div>
+    </div>
+
+    <div class="wheel-card">
+      <h2 style="text-align:left;">Score Summary</h2>
+      <p class="sub" style="text-align:left;">Each category is out of 25 (5 questions × 5 points), scaled to a final score out of 5</p>
+      <table class="score-table">
+        <thead><tr><th>Category</th><th class="num">Total</th><th class="num">Final (of 5)</th></tr></thead>
+        <tbody id="scoreTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="interpret">
+  <h2>Understanding Your Scores</h2>
+  <p class="sub">What the numbers are telling you</p>
+
+  <div class="tier">
+    <div class="range">4 – 5</div>
+    <p>Congratulations — you're very satisfied in this area. Keep doing what's working, but don't overlook room to grow further; don't let a high score become a ceiling.</p>
+  </div>
+  <div class="tier">
+    <div class="range">2 – 4</div>
+    <p>You're reasonably satisfied here. There's still real opportunity to explore ideas and move this further up the scale.</p>
+  </div>
+  <div class="tier">
+    <div class="range">0 – 2</div>
+    <p>You're not very satisfied in this area, and it's worth exploring ways to enhance it. Don't get discouraged — a lower score is full of opportunity. It's often where you have the most room to grow and the most value to gain.</p>
+  </div>
+
+  <blockquote class="reflect">
+    This is your Wheel of Life. Is it crooked or balanced? A crooked wheel struggles to move forward smoothly — how efficient can you be if you're not balanced? It's easy to become extremely satisfied in one area, but at what cost? Pour everything into career and finances, and what happens to your health, your relationships, your fun along the way? The goal isn't to trade off one area for another — it's to <b style="color:var(--teal);font-style:normal;">grow the whole wheel</b>, pushing your boundaries so it gets bigger while staying balanced.
+  </blockquote>
+</div>
+
+<div class="action">
+  <h2>Put the Wheel in Motion</h2>
+  <p class="sub">Looking at the wheel isn't enough — take 10 minutes to answer the "why." Your notes stay on this page only.</p>
+
+  <div class="action-q">
+    <label><span class="n">1</span>Why did you score yourself in each category the way you did?</label>
+    <textarea placeholder="Write freely…"></textarea>
+  </div>
+  <div class="action-q">
+    <label><span class="n">2</span>What's your ideal score for each category in the next month, 3 months, 6 months, and one year?</label>
+    <textarea placeholder="Write freely…"></textarea>
+  </div>
+  <div class="action-q">
+    <label><span class="n">3</span>Where are your biggest gaps in satisfaction levels?</label>
+    <textarea placeholder="Write freely…"></textarea>
+  </div>
+  <div class="action-q">
+    <label><span class="n">4</span>Which area of your life do you primarily want to focus on to enhance your satisfaction levels?</label>
+    <textarea placeholder="Write freely…"></textarea>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">Save / Print This Page</button>
+</div>
+
+<footer>Wellness Wheel · Self-Assessment Activity</footer>
+
+<script>
+const DATA = [
+  { key:"emotional", name:"Emotional Wellness", color:"var(--c-emotional)", hex:"#B4574F", icon:"ic-emotional",
+    questions:[
+      "I recognize when I'm feeling stressed or anxious and take steps to manage my stress (exercise, meditation, yoga).",
+      "I generally feel good about who I am.",
+      "I have a sense of control in my life and am resilient and can bounce back after a disappointment or situation.",
+      "I can ask for help when needed.",
+      "I can say \u201cno\u201d when needed and not feel guilty."
+    ]},
+  { key:"spiritual", name:"Spiritual Wellness", color:"var(--c-spiritual)", hex:"#8A6BAB", icon:"ic-spiritual",
+    questions:[
+      "I have a sense of meaning and purpose in my life.",
+      "I take time for reflective growth, prayer and/or meditation.",
+      "I have a clear sense of right and wrong, and act accordingly.",
+      "I participate in acts of goodwill without expecting anything in return.",
+      "I practice forgiveness and compassion in life."
+    ]},
+  { key:"environmental", name:"Environmental Wellness", color:"var(--c-environmental)", hex:"#7C9A5E", icon:"ic-environmental",
+    questions:[
+      "I enjoy spending time outside in natural settings.",
+      "I maintain a clean and organized home/room and free of clutter.",
+      "I find ways to make my environment safer and healthier (e.g., conserving energy, recycling).",
+      "I promote green living when possible.",
+      "My living space and work environment are supportive and nurturing."
+    ]},
+  { key:"financial", name:"Financial Wellness", color:"var(--c-financial)", hex:"#C08A3E", icon:"ic-financial",
+    questions:[
+      "I have financial plans that are in line with my personal goals.",
+      "I use my money wisely and live within my means.",
+      "I can balance saving for the future and spending in the present.",
+      "I have a spending plan (budget), pay bills on time and manage credit.",
+      "My behavior reflects my beliefs/values about money."
+    ]},
+  { key:"intellectual", name:"Intellectual Wellness", color:"var(--c-intellectual)", hex:"#4E7A9C", icon:"ic-intellectual",
+    questions:[
+      "I am curious and enjoy learning new things.",
+      "I expose myself to new ideas, people and beliefs that are different from my own.",
+      "I am a critical thinker and can provide constructive feedback.",
+      "I engage in mentally stimulating activities and hobbies.",
+      "I challenge myself to see all sides of an issue."
+    ]},
+  { key:"physical", name:"Physical Wellness", color:"var(--c-physical)", hex:"#D19A3E", icon:"ic-physical",
+    questions:[
+      "I stay hydrated throughout the day and eat a well-balanced and nutritional diet.",
+      "I go to recommended check-ups (i.e., physical, eye, dental).",
+      "I regularly get 6 to 8 hours of sleep each night.",
+      "I consistently engage in regular physical activity or movement.",
+      "If at all, I use alcohol or prescribed drugs responsibly and moderately."
+    ]},
+  { key:"occupational", name:"Occupational Wellness", color:"var(--c-occupational)", hex:"#6E8F4E", icon:"ic-occupational",
+    questions:[
+      "I find my work/volunteering motivating and interesting.",
+      "I have goals and purpose in what I am doing that inspires or challenges me.",
+      "I can use my knowledge, skills and talents to contribute and collaborate with others.",
+      "I take opportunities for new experiences and professional development.",
+      "I have a healthy balance between work and other areas of my life."
+    ]},
+  { key:"social", name:"Social Wellness", color:"var(--c-social)", hex:"#5A7D6B", icon:"ic-social",
+    questions:[
+      "I can resolve conflicts in all areas of my life.",
+      "I have a sense of belonging by enjoying social activities and engaging with other people in my community.",
+      "I can set and stick to my personal boundaries as well as respect others' boundaries.",
+      "I feel supported in my close relationships with family and friends.",
+      "I value diversity and treat others with respect."
+    ]}
+];
+
+const TOTAL_QUESTIONS = DATA.reduce((a,c)=>a+c.questions.length,0);
+const scores = {};
+DATA.forEach(c => scores[c.key] = new Array(c.questions.length).fill(null));
+
+const categoriesEl = document.getElementById('categories');
+const scoreBody = document.getElementById('scoreTableBody');
+const legendEl = document.getElementById('wheelLegend');
+
+/* ---------- hero wheel (static 8-area graphic) ---------- */
+function buildHeroWheel(){
+  const wrap = document.getElementById('heroWheel');
+  const ring = document.getElementById('heroRing');
+  const seg = 360 / DATA.length;
+  const stops = DATA.map((c,i) => `${c.hex} ${i*seg}deg ${(i+1)*seg}deg`).join(', ');
+  ring.style.background = `conic-gradient(from -${seg/2}deg, ${stops})`;
+
+  DATA.forEach((cat,i) => {
+    const angle = (-90 + i * seg) * Math.PI/180;
+    const rPct = 37; // % radius for icon placement
+    const x = 50 + rPct * Math.cos(angle);
+    const y = 50 + rPct * Math.sin(angle);
+    const node = document.createElement('div');
+    node.className = 'hero-node';
+    node.style.left = x + '%';
+    node.style.top = y + '%';
+    node.innerHTML = `
+      <div class="badge" style="color:${cat.hex}">
+        <svg class="icon"><use href="#${cat.icon}"/></svg>
+      </div>
+      <div class="lbl">${cat.name.replace(' Wellness','')}</div>`;
+    wrap.appendChild(node);
+  });
+}
+buildHeroWheel();
+
+/* ---------- build category sections ---------- */
+DATA.forEach((cat, ci) => {
+  const section = document.createElement('div');
+  section.className = 'category';
+  section.id = 'cat-' + cat.key;
+
+  const RING_R = 15, RING_C = 2*Math.PI*RING_R;
+
+  const head = document.createElement('div');
+  head.className = 'cat-head';
+  head.innerHTML = `
+    <div class="cat-head-left">
+      <span class="cat-icon-badge" style="--cat-bg:${cat.hex}22;--cat-fg:${cat.hex}">
+        <svg class="icon"><use href="#${cat.icon}"/></svg>
+      </span>
+      <span class="cat-name">${cat.name}</span>
+    </div>
+    <div class="cat-right">
+      <span class="cat-score sans" id="score-${cat.key}">0 / 25</span>
+      <svg class="cat-ring" width="34" height="34" viewBox="0 0 34 34">
+        <circle cx="17" cy="17" r="${RING_R}" fill="none" stroke="#EFE8D8" stroke-width="3.4"/>
+        <circle id="ring-${cat.key}" cx="17" cy="17" r="${RING_R}" fill="none" stroke="${cat.hex}"
+          stroke-width="3.4" stroke-linecap="round" stroke-dasharray="${RING_C}" stroke-dashoffset="${RING_C}"
+          transform="rotate(-90 17 17)" style="transition:stroke-dashoffset .35s ease"/>
+      </svg>
+      <span class="chevron">▾</span>
+    </div>`;
+  head.addEventListener('click', () => {
+    section.classList.toggle('open');
+    const body = section.querySelector('.cat-body');
+    body.style.maxHeight = section.classList.contains('open') ? body.scrollHeight + 'px' : 0;
+  });
+
+  const body = document.createElement('div');
+  body.className = 'cat-body';
+
+  cat.questions.forEach((qtext, qi) => {
+    const q = document.createElement('div');
+    q.className = 'question';
+    const opts = [1,2,3,4,5].map(v =>
+      `<label class="opt" style="--cat-color:${cat.hex}" data-cat="${cat.key}" data-qi="${qi}" data-val="${v}">
+         <input type="radio" name="${cat.key}-${qi}" value="${v}">${v}
+       </label>`).join('');
+    q.innerHTML = `
+      <div class="q-text">${qtext}</div>
+      <div class="scale">
+        <span class="scale-label">Unsatisfied</span>
+        ${opts}
+        <span class="scale-label right">Satisfied</span>
+      </div>`;
+    body.appendChild(q);
+  });
+
+  section.appendChild(head);
+  section.appendChild(body);
+  categoriesEl.appendChild(section);
+
+  if (ci === 0) {
+    section.classList.add('open');
+    requestAnimationFrame(() => {
+      const b = section.querySelector('.cat-body');
+      b.style.maxHeight = b.scrollHeight + 'px';
+    });
+  }
+});
+
+categoriesEl.addEventListener('click', (e) => {
+  const opt = e.target.closest('.opt');
+  if (!opt) return;
+  const cat = opt.dataset.cat, qi = +opt.dataset.qi, val = +opt.dataset.val;
+  scores[cat][qi] = val;
+
+  const row = opt.parentElement;
+  row.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+  opt.querySelector('input').checked = true;
+
+  const openBody = opt.closest('.cat-body');
+  if (openBody) openBody.style.maxHeight = openBody.scrollHeight + 'px';
+
+  updateAll();
+});
+
+DATA.forEach(cat => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><span class="cat-dot" style="background:${cat.hex}"></span>${cat.name.replace(' Wellness','')}</td>
+    <td class="num" id="tot-${cat.key}">0 / 25</td>
+    <td class="num" id="fin-${cat.key}">0.0</td>`;
+  scoreBody.appendChild(tr);
+});
+DATA.forEach(cat => {
+  const span = document.createElement('span');
+  span.innerHTML = `<span class="swatch" style="background:${cat.hex}"></span>${cat.name.replace(' Wellness','')}`;
+  legendEl.appendChild(span);
+});
+
+/* ---------- radar wheel rendering ---------- */
+const svg = document.getElementById('wheelSvg');
+const CX = 240, CY = 240, R = 190;
+const N = DATA.length;
+function angleFor(i){ return (Math.PI*2*i/N) - Math.PI/2; }
+function pointFor(i, r){ const a = angleFor(i); return [CX + r*Math.cos(a), CY + r*Math.sin(a)]; }
+
+function buildStaticGrid(){
+  let s = '';
+  for (let ring=1; ring<=5; ring++){
+    const r = R*(ring/5);
+    const pts = [];
+    for (let i=0;i<N;i++) pts.push(pointFor(i,r).join(','));
+    s += `<polygon points="${pts.join(' ')}" fill="none" stroke="#D9CFB8" stroke-width="${ring===5?1.4:1}" />`;
+  }
+  DATA.forEach((cat,i) => {
+    const [x,y] = pointFor(i,R);
+    s += `<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="#D9CFB8" stroke-width="1" />`;
+    const [lx,ly] = pointFor(i,R+34);
+    s += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle"
+            font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="12.5" fill="#4b5750" font-weight="600">${cat.name.replace(' Wellness','')}</text>`;
+  });
+  return s;
+}
+
+function finalScore(catKey){
+  const arr = scores[catKey];
+  const total = arr.reduce((a,b)=> a + (b||0), 0);
+  return (total/25)*5;
+}
+
+function renderWheel(){
+  const grid = buildStaticGrid();
+  const dataPts = DATA.map((cat,i) => {
+    const fs = Math.max(finalScore(cat.key), 0.001);
+    return pointFor(i, R*(fs/5));
+  });
+  const dataStr = dataPts.map(p=>p.join(',')).join(' ');
+  const dots = DATA.map((cat,i) => {
+    const [x,y] = dataPts[i];
+    return `<circle cx="${x}" cy="${y}" r="4.5" fill="${cat.hex}" stroke="#fff" stroke-width="1.5" />`;
+  }).join('');
+  svg.innerHTML = `
+    ${grid}
+    <polygon points="${dataStr}" fill="#3D6560" fill-opacity="0.18" stroke="#2C4A47" stroke-width="2" stroke-linejoin="round" />
+    ${dots}
+    <circle cx="${CX}" cy="${CY}" r="3" fill="#2C4A47" />
+  `;
+}
+
+const RING_R = 15, RING_C = 2*Math.PI*RING_R;
+
+function updateAll(){
+  let answered = 0;
+  DATA.forEach(cat => {
+    const arr = scores[cat.key];
+    const total = arr.reduce((a,b)=> a + (b||0), 0);
+    const fs = (total/25)*5;
+    answered += arr.filter(v=>v!==null).length;
+    document.getElementById('score-'+cat.key).textContent = `${total} / 25`;
+    document.getElementById('tot-'+cat.key).textContent = `${total} / 25`;
+    document.getElementById('fin-'+cat.key).textContent = fs.toFixed(1);
+    const ring = document.getElementById('ring-'+cat.key);
+    const pct = total/25;
+    ring.style.strokeDashoffset = RING_C * (1 - pct);
+  });
+
+  const pct = Math.round((answered/TOTAL_QUESTIONS)*100);
+  document.getElementById('progressFillTop').style.width = pct + '%';
+  document.getElementById('answeredCountTop').textContent = answered;
+  document.getElementById('progressFillLocked').style.width = pct + '%';
+  document.getElementById('answeredCountLocked').textContent = answered;
+
+  const lockedCard = document.getElementById('lockedCard');
+  const revealedGrid = document.getElementById('revealedGrid');
+  if (answered === TOTAL_QUESTIONS){
+    if (lockedCard.style.display !== 'none'){
+      lockedCard.style.display = 'none';
+      revealedGrid.style.display = 'grid';
+      renderWheel();
+      document.getElementById('wheelSection').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  } else {
+    lockedCard.style.display = 'block';
+    revealedGrid.style.display = 'none';
+  }
+}
+
+updateAll();
+</script>
+
+</body>
+</html>
