@@ -1,3 +1,5 @@
+const SUPABASE_URL = 'https://rbttckoqkfjxvvoarqyd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_UuiO6rLdPLu0hTIKspQ_kg_lHnUB7G2';
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -440,6 +442,23 @@
   }
   .print-btn:hover{background:var(--teal-2);}
 
+  .name-card{
+    margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:4px;
+    padding:16px 22px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .name-card label{display:block;font-size:12px;font-weight:600;color:var(--teal-2);
+    text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+  .name-card input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;font-family:inherit;color:var(--ink);}
+  .name-card input:focus{outline:none;border-color:var(--sage);}
+  .name-card .note{margin:8px 0 0;font-size:12px;color:#6b7568;line-height:1.45;}
+  .save-status{
+    text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12.5px;color:#6b7568;margin:0;
+  }
+  .save-status.ok{color:var(--teal-2);}
+  .save-status.err{color:var(--coral);}
+
   @media (max-width:600px){
     .scale-label{display:none;}
     .cat-name{font-size:16px;}
@@ -495,6 +514,11 @@
       <li><b>1</b> — I am extremely unsatisfied and need to take actionable steps to improve</li>
     </ol>
   </div>
+  <div class="name-card">
+    <label for="userName">Your name (optional)</label>
+    <input id="userName" type="text" maxlength="80" placeholder="Leave blank to stay anonymous" autocomplete="name">
+    <p class="note">When you answer all 40 questions, your scores (and your name, if entered) are saved to the organiser's database. Nothing is saved before then.</p>
+  </div>
 </div>
 
 <main id="categories"></main>
@@ -526,6 +550,7 @@
         <tbody id="scoreTableBody"></tbody>
       </table>
     </div>
+    <p class="save-status" id="saveStatus"></p>
   </div>
 </div>
 
@@ -577,7 +602,35 @@
 
 <footer>Wellness Wheel · Self-Assessment Activity</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+/* ---------- Supabase settings: paste your own values ---------- */
+const SUPABASE_URL = 'YOUR_PROJECT_URL';       // e.g. https://abcdxyz.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';     // the public "anon" key (never the service_role key)
+
+const sb = (window.supabase && !SUPABASE_URL.startsWith('YOUR_'))
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+async function saveResults(){
+  const status = document.getElementById('saveStatus');
+  if (!sb){ status.textContent = ''; return; }
+  status.className = 'save-status';
+  status.textContent = 'Saving your results…';
+  const payload = {};
+  DATA.forEach(c => payload[c.key] = scores[c.key]);
+  const name = document.getElementById('userName').value.trim() || null;
+  const { error } = await sb.from('wheel_results').insert({ name, scores: payload });
+  if (error){
+    status.className = 'save-status err';
+    status.textContent = 'Your results could not be saved. Your wheel above is still yours to keep.';
+    console.error('Save failed:', error.message);
+  } else {
+    status.className = 'save-status ok';
+    status.textContent = 'Your results have been saved.';
+  }
+}
+
 const DATA = [
   { key:"emotional", name:"Emotional Wellness", color:"var(--c-emotional)", hex:"#B4574F", icon:"ic-emotional",
     questions:[
@@ -858,6 +911,7 @@ function updateAll(){
       lockedCard.style.display = 'none';
       revealedGrid.style.display = 'grid';
       renderWheel();
+      saveResults();
       document.getElementById('wheelSection').scrollIntoView({behavior:'smooth', block:'start'});
     }
   } else {
